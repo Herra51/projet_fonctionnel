@@ -2,7 +2,7 @@ CREATE DATABASE projet_fonctionnel;
 
 CREATE TABLE users (
     id_user INT AUTO_INCREMENT PRIMARY KEY,
-    username VARCHAR(255) NOT NULL UNIQUE,
+    username VARCHAR(255) NOT NULL UNIQUE CHECK (LENGTH(username) > 0),
     password VARCHAR(255) NOT NULL
 );
 
