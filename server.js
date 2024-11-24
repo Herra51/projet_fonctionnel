@@ -27,7 +27,7 @@ const db = mysql.createConnection({
 // Route for user registration
 app.post('/register', async (req, res) => {
     const { username, password } = req.body;
-    if (username.length != 0 || password.length != 0) {
+    if (username.length == 0 || password.length == 0) {
         return res.status(400).json({ message: 'Veuillez remplir tous les champs.' });
     }else{
         // Hash the password before storing it

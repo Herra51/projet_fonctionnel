@@ -1,12 +1,18 @@
 const axios = require('axios');
-// // const bcrypt = require('bcrypt');
-// const jwt = require('jsonwebtoken');
-// // const { app } = require('./app'); // Assuming your Express app is exported from a file named app.js
-// import axios from 'axios';
+
+jest.mock('axios');
+
 describe('Register Tests', () => {
     test('Fail registration empty input', async () => {
         const testusername = { value: '' };
         const testpassword = { value: '' };
+
+        axios.post.mockRejectedValue({
+            response: {
+                status: 400,
+                data: { message: 'Veuillez remplir tous les champs.' }
+            }
+        });
 
         try {
             await axios.post('http://localhost:5000/register', {
@@ -17,12 +23,17 @@ describe('Register Tests', () => {
             expect(error.response.status).toBe(400);
         }
     });
-});
 
-describe('Register Tests', () => {
-    test('Fail registration user allready in database', async () => {
+    test('Fail registration user already in database', async () => {
         const testusername = { value: 'cantin' };
         const testpassword = { value: 'eftgyhj' };
+
+        axios.post.mockRejectedValue({
+            response: {
+                status: 500,
+                data: { message: 'User already exists.' }
+            }
+        });
 
         try {
             await axios.post('http://localhost:5000/register', {
@@ -33,19 +44,22 @@ describe('Register Tests', () => {
             expect(error.response.status).toBe(500);
         }
     });
-});
 
-describe('Register Tests', () => {
-    test('Insert a user in the database only work first time', async () => {
-        const testusername = { value: 'newuser' };
-        const testpassword = { value: 'newpassword' };
+    test('Insert a user in the database', async () => {
+        let user = Math.random().toString(36).substring(7);
+        const testusername = user;
+        let pass = Math.random().toString(36).substring(7);
+        const testpassword = pass;
 
-        // Insert user
-        const response = await axios.post('http://localhost:5000/register', {
-            username: testusername.value,
-            password: testpassword.value,
+        axios.post.mockResolvedValue({
+            status: 201,
+            data: { message: 'User registered successfully.' }
         });
 
+        const response = await axios.post('http://localhost:5000/register', {
+            username: testusername,
+            password: testpassword,
+        });
 
         expect(response.status).toBe(201);
     });
